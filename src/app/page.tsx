@@ -1,18 +1,16 @@
-import prisma from "@/lib/db";
+import { caller, getQueryClient, HydrateClient, prefetch, trpc } from "@/trpc/server";
+import { prefetchLoader } from "./prefetch";
+import { Suspense } from "react";
+import { Client } from "./client";
 
-const Page = async() => {
-
-  // prisma api call
-  const users = await prisma.user.findMany({
-    where: {
-      id: 1
-    }
-  })
-  return(
-    <div className="flex justify-center items-center min-h-screen">
-      Hi, There are all Users:
-      {JSON.stringify(users)}
-    </div>
+const Page = async () => {
+  prefetchLoader();
+  return (
+    <HydrateClient>
+      <Suspense>
+        <Client />
+      </Suspense>
+    </HydrateClient>
   )
 }
 
