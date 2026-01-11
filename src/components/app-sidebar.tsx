@@ -15,6 +15,7 @@ import {
 import { authClient } from "@/lib/auth-client"
 import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useHasActiveSubscription } from "@/features/subscriptions/hooks/use-subscription"
 
 // Menu items.
 const items = [
@@ -38,6 +39,7 @@ const items = [
 export function AppSidebar() {
     const router = useRouter();
     const pathName = usePathname();
+    const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
     return (
         <Sidebar collapsible="icon">
             <SidebarContent >
@@ -47,9 +49,9 @@ export function AppSidebar() {
                         <SidebarMenu >
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton 
-                                    isActive={ pathName === "/" ? pathName === "/" : pathName.startsWith(item.url)}
-                                    asChild>
+                                    <SidebarMenuButton
+                                        isActive={pathName === "/" ? pathName === "/" : pathName.startsWith(item.url)}
+                                        asChild>
                                         <a href={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
@@ -61,38 +63,41 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                
+
             </SidebarContent>
             <SidebarFooter>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton tooltip={"Upgrade to Pro"} className="hover:cursor-pointer">
+                <SidebarMenu>
+                    <SidebarMenuItem>
+
+                        {!hasActiveSubscription && !isLoading && (
+                            <SidebarMenuButton onClick={() => authClient.checkout({ slug: "Pro" })} tooltip={"Upgrade to Pro"} className="hover:cursor-pointer">
                                 <StarIcon />
                                 Upgrade to Pro
                             </SidebarMenuButton>
+                        )}
 
-                            <SidebarMenuButton tooltip={"Billing portal"} className="hover:cursor-pointer">
-                                <CreditCardIcon />
-                                Billing portal
-                            </SidebarMenuButton>
+                        <SidebarMenuButton onClick={() => authClient.customer.portal()} tooltip={"Billing portal"} className="hover:cursor-pointer">
+                            <CreditCardIcon />
+                            Billing portal
+                        </SidebarMenuButton>
 
-                            <SidebarMenuButton onClick={() => authClient.signOut({
-                                fetchOptions: {
-                                    onSuccess: () => {
-                                        router.push("/login")
-                                        toast.success("you'r logout!")
-                                    },
-                                    onError: (ctx) => {
-                                        toast.error(ctx.error.message)
-                                    }
+                        <SidebarMenuButton onClick={() => authClient.signOut({
+                            fetchOptions: {
+                                onSuccess: () => {
+                                    router.push("/login")
+                                    toast.success("you'r logout!")
+                                },
+                                onError: (ctx) => {
+                                    toast.error(ctx.error.message)
                                 }
-                            })} tooltip={"Logout"} className="hover:cursor-pointer">
-                                <LogOutIcon />
-                                Logout
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarFooter>
+                            }
+                        })} tooltip={"Logout"} className="hover:cursor-pointer">
+                            <LogOutIcon />
+                            Logout
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
         </Sidebar>
     )
 }
