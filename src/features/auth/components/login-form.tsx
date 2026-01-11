@@ -48,11 +48,11 @@ export const LoginForm = () => {
     }
     const isPending = form.formState.isSubmitting;
     return (
-        <Card className="w-full max-w-md mx-auto mt-30">
+        <Card className="w-2xl max-w-md mx-auto mt-2">
             <CardHeader className="flex flex-col items-center">
                 <CardTitle className="font-semibold">Create an account</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                    Enter your email and password to sign up
+                    Enter your email and password to login
                 </CardDescription>
             </CardHeader>
 

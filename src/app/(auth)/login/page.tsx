@@ -5,7 +5,7 @@ const Page = async() => {
     await requiredUnAuth();
     return(
         <div>
-            <LoginForm />
+            <LoginForm  />
         </div>
     )
 }
