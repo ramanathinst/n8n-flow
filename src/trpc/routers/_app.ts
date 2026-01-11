@@ -1,9 +1,14 @@
 import { z } from 'zod';
 import { baseProcedure, createTRPCRouter, protectedProcedure } from '../init';
 import prisma from '@/lib/db';
+import { inngest } from '@/inngest/client';
 export const appRouter = createTRPCRouter({
-    getUsers: protectedProcedure.query(async() => {
-        return await prisma.user.findMany({
+    testAi: baseProcedure.mutation(async({ctx}) => {
+        return await inngest.send({
+            name: "ai/execute",
+            data: {
+                email: "ramanathinst@gmail.com"
+            }
         })
     })
 });
