@@ -54,7 +54,7 @@ export const SignupForm = () => {
     }
     const isPending = form.formState.isSubmitting;
     return (
-        <Card className="w-full max-w-md mx-auto mt-30">
+        <Card className="w-2xl max-w-md mx-auto mt-2">
             <CardHeader className="flex flex-col items-center">
                 <CardTitle className="font-semibold">Create an account</CardTitle>
                 <CardDescription className="text-muted-foreground">
