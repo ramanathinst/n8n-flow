@@ -50,6 +50,7 @@ export function AppSidebar() {
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton
+                                        tooltip={item.title}
                                         isActive={pathName === "/" ? pathName === "/" : pathName.startsWith(item.url)}
                                         asChild>
                                         <a href={item.url}>
