@@ -1,16 +1,10 @@
 import { z } from 'zod';
-import { baseProcedure, createTRPCRouter, premiumProcedure, protectedProcedure } from '../init';
+import {createTRPCRouter, } from '../init';
 import prisma from '@/lib/db';
 import { inngest } from '@/inngest/client';
+import { workflowsRouter } from '@/features/workflows/server/routers';
 export const appRouter = createTRPCRouter({
-    testAi: premiumProcedure.mutation(async({ctx}) => {
-        return await inngest.send({
-            name: "ai/execute",
-            data: {
-                email: "ramanathinst@gmail.com"
-            }
-        })
-    })
+    workflows: workflowsRouter
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;
