@@ -1,3 +1,4 @@
+"use client"
 import { FolderOpenIcon, Loader2Icon, LucideIcon, MoreVerticalIcon, PlusIcon, SearchIcon, TrashIcon, TriangleAlertIcon, WorkflowIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -168,7 +169,7 @@ interface StateViewProps {
     message?: string;
 }
 // Loding view
-export const LodingView = ({
+export const LoadingView = ({
     message
 }: StateViewProps) => {
     return (
