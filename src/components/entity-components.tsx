@@ -1,6 +1,7 @@
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { Input } from "./ui/input";
 
 type EntityHeaderProps = {
     name: string;
@@ -68,11 +69,84 @@ export const EntityContainer = ({
     return (
         <div className="flex flex-col gap-5 px-9 py-8">
             {header}
-            <div className="flex flex-col">
+            <div className="flex flex-col items-end mb-3">
                 {search}
-                {children}
             </div>
-            {pagination}
+            <div className="flex flex-col ">
+                <div>
+                    {children}
+                </div>
+                <div className="fixed mb-5 justify-between sm:w-150  md:w-240 items-center bottom-0">
+                    {pagination}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+
+// Entity-search
+
+interface EntitySearchProps {
+    value: string;
+    onChange: (value: string) => void;
+    placeHolder?: string;
+}
+
+export const EntitySearch = ({
+    value,
+    onChange,
+    placeHolder = "Search"
+}: EntitySearchProps) => {
+    return (
+        <div className="relative">
+            <SearchIcon className="absolute ml-5 size-4 top-1/2 -translate-1/2" />
+            <Input
+                className="w-60 pl-9"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeHolder}
+            />
+        </div>
+    )
+}
+
+// Entity-pagination
+
+interface EntityPaginationProps {
+    page: number;
+    onPageChange: (page: number) => void;
+    totalPages: number;
+    disabled?: boolean;
+}
+
+export const EntityPagination = ({
+    page,
+    onPageChange,
+    totalPages,
+    disabled
+}: EntityPaginationProps) => {
+    return (
+        <div className="flex flex-row items-center justify-between">
+            <div className="font-semibold">
+                {page} of {totalPages || 1}
+            </div>
+            <div className="flex flex-row justify-end gap-3">
+                <Button
+                    variant={"outline"}
+                    disabled={page === 1 || disabled}
+                    onClick={() => onPageChange(Math.max(1, page - 1))}
+                >
+                    Prev
+                </Button>
+                <Button
+                    variant={"outline"}
+                    disabled={page === totalPages || totalPages === 0 || disabled}
+                    onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+                >
+                    Next
+                </Button>
+            </div>
         </div>
     )
 }

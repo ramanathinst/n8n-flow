@@ -1,3 +1,4 @@
+import { PAGINATION } from "@/config/constants";
 import prisma from "@/lib/db";
 import {
     createTRPCRouter,
@@ -49,11 +50,50 @@ export const workflowsRouter = createTRPCRouter({
                 },
             });
         }),
-    getMany: protectedProcedure.query(async ({ ctx }) => {
-            return await prisma.workflow.findMany({
-                where: {
-                    userId: ctx.auth.user.id,
-                },
-            });
+    getMany: protectedProcedure
+    .input(z.object({
+        page: z.number().default(PAGINATION.DEFAULT_PAGE),
+        pageSize: z.number().min(PAGINATION.MIN_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE).default(PAGINATION.DEFAULT_PAGE_SIZE),
+        search: z.string().default("").optional()
+    }))
+    .query(async ({ ctx, input }) => {
+            const { page, pageSize, search } = input;
+
+            const [ items, totalCount ] = await Promise.all([
+                await prisma.workflow.findMany({
+                    skip: (page - 1) * pageSize,
+                    take: pageSize,
+                    where: {
+                        userId: ctx.auth.user.id,
+                        name: {
+                            contains: search
+                        }
+                    },
+                    orderBy: {
+                        updatedAt: "desc"
+                    }
+                }),
+                await prisma.workflow.count({
+                    where: {
+                        userId: ctx.auth.user.id,
+                        name: {
+                            contains: search
+                        }
+                    }
+                })
+            ])
+
+            const totalPages = Math.ceil( totalCount / pageSize);
+            const hasNextPage = page < totalPages;
+            const hasPrePage = page > 1;
+            
+            return {
+                items,
+                page,
+                pageSize,
+                totalPages,
+                hasNextPage,
+                hasPrePage
+            }
         }),
 });
