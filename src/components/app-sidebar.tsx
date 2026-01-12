@@ -30,7 +30,7 @@ const items = [
         icon: HistoryIcon,
     },
     {
-        title: "Credentiails",
+        title: "Credentials",
         url: "/credentials",
         icon: KeyRoundIcon,
     }
