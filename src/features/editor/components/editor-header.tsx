@@ -81,7 +81,7 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
     }
 
     return (
-        <BreadcrumbItem onClick={() => setIsEditing(true)}>
+        <BreadcrumbItem className="cursor-pointer hover:text-accent-foreground" onClick={() => setIsEditing(true)}>
             {workflow.name}
         </BreadcrumbItem>
     )
