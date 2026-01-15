@@ -54,3 +54,17 @@ export const useUpdateWorkflowName = () => {
         }
     }));
 }
+
+export const useUpdateWorkflow = () => {
+    const queryClient = useQueryClient();
+    const trpc = useTRPC();
+    return useMutation(trpc.workflows.update.mutationOptions({
+        onSuccess: (data) => {
+            toast.success(`Workflow has been saved: ${data.name}`)
+            queryClient.invalidateQueries(trpc.workflows.getOne.queryFilter({id: data.id}))
+        },
+        onError: (error) => {
+            toast.error(`Field to Save workflow name: ${error.message}`)
+        }
+    }));
+}

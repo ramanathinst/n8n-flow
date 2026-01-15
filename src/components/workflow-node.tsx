@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { SettingsIcon, TrashIcon } from "lucide-react";
 
 interface WorkflowNodeProps {
-    children?: React.ReactNode;
+    children: React.ReactNode;
     name?: string;
     description?: string;
     onSettings?: () => void;
@@ -26,7 +26,7 @@ export const WorkflowNode = ({
                     <Button variant={"outline"} onClick={onSettings} className="cursor-pointer">
                         <SettingsIcon />
                     </Button>
-                    <Button variant={"outline"} onClick={onSettings} className="cursor-pointer">
+                    <Button variant={"outline"} onClick={onDelete} className="cursor-pointer">
                         <TrashIcon />
                     </Button>
                 </NodeToolbar>
@@ -34,7 +34,7 @@ export const WorkflowNode = ({
             {children}
             {name && (
                 <NodeToolbar position={Position.Bottom} isVisible >
-                    <div>
+                    <div className="flex flex-col items-center">
                         <span className="font-semibold"> {name} </span>
                         {description && (
                             <span className="text-muted-foreground text-sm"> {description} </span>

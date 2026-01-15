@@ -17,9 +17,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/use-workflows"
+import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/use-workflows"
 import { useEffect, useRef, useState } from "react"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { useAtomValue } from "jotai"
+import { editorAtoms } from "../store/atoms"
 
 export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
@@ -103,6 +106,30 @@ export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
     )
 }
 
+export const EditorSaveButton = ({workflowId}: {workflowId: string}) => {
+    const saveWorkflow = useUpdateWorkflow();
+    const editor = useAtomValue(editorAtoms);
+    const handleSave = () => {
+        if(!editor) {
+            return;
+        }
+        const nodes = editor.getNodes();
+        const edges = editor.getEdges();
+        saveWorkflow.mutate({
+            id: workflowId,
+            nodes,
+            edges
+        })
+    }
+    return(
+        <div className="flex mr-4">
+            <Button disabled={saveWorkflow.isPending} onClick={handleSave}>
+                Save
+            </Button>
+        </div>
+    )
+}
+
 export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
     return (
         <header className="p-4 bg-accent">
@@ -111,7 +138,8 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
                     <SidebarTrigger className="mr-5" />
                     <EditorBreadcrumbs workflowId={workflowId} />
                 </div>
-                <div>
+                <div className="flex">
+                    <EditorSaveButton workflowId={workflowId} />
                     <ModeToggle />
                 </div>
             </div>
