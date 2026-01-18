@@ -55,7 +55,7 @@ export const BaseExecutionsNode = memo(({
                         {typeof Icon === "string" ? (
                             <Image src={Icon} alt="base-trigger-node" width={20} height={20} />
                         ) : (
-                            <Icon className="size-2" />
+                            <Icon className="size-4" />
                         )}
                         {children}
                         <BaseHandle

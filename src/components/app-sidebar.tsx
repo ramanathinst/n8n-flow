@@ -1,5 +1,5 @@
 "use client"
-import { CreditCardIcon, HistoryIcon, KeyRoundIcon, LogOutIcon, StarIcon, Workflow } from "lucide-react"
+import { CreditCardIcon, FolderOpenIcon, HistoryIcon, KeyRoundIcon, LogOutIcon, StarIcon, Workflow } from "lucide-react"
 
 import {
     Sidebar,
@@ -8,6 +8,7 @@ import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
+    SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -16,56 +17,76 @@ import { authClient } from "@/lib/auth-client"
 import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useHasActiveSubscription } from "@/features/subscriptions/hooks/use-subscription"
+import Image from "next/image"
+import Link from "next/link"
 
 // Menu items.
-const items = [
+const menuItems = [
     {
-        title: "Workflows",
-        url: "/workflows",
-        icon: Workflow,
-    },
-    {
-        title: "Executions",
-        url: "/executions",
-        icon: HistoryIcon,
-    },
-    {
-        title: "Credentials",
-        url: "/credentials",
-        icon: KeyRoundIcon,
+        title: "main",
+        items: [
+            {
+                title: "Workflows",
+                icon: FolderOpenIcon,
+                url: "/workflows"
+            },
+
+            {
+                title: "Executions",
+                icon: KeyRoundIcon,
+                url: "/executions"
+            },
+
+            {
+                title: "Credentials",
+                icon: HistoryIcon,
+                url: "/credentials"
+            },
+        ]
+
     }
 ]
 
 export function AppSidebar() {
     const router = useRouter();
-    const pathName = usePathname();
+    const pathname = usePathname();
     const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
     return (
         <Sidebar collapsible="icon">
-            <SidebarContent >
-                <SidebarGroup>
-                    <SidebarGroupLabel className="font-bold text-md mb-5">N8N-FLOW</SidebarGroupLabel>
-                    <SidebarGroupContent >
-                        <SidebarMenu >
-                            {items.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton
-                                        tooltip={item.title}
-                                        isActive={pathName === "/" ? pathName === "/" : pathName.startsWith(item.url)}
-                                        asChild>
-                                        <a href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-
-
+            <SidebarHeader className="mb-6">
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="gap-x-4 px-4 h-10">
+                        <Link href={"/"} prefetch>
+                            <Image src={"/logos/logo.svg"} className="size-4" height={30} width={30} alt="n8n" />
+                            <span className="font-semibold text-sm">N8N</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarHeader>
+            <SidebarContent>
+                {menuItems.map((group) => (
+                    <SidebarGroup key={group.title}>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {group.items.map((item) => (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton
+                                            tooltip={item.title}
+                                            isActive={item.url === "/" ? pathname === "/" : pathname.startsWith(item.url)}
+                                        >
+                                            <item.icon className="size-4" />
+                                            <Link href={item.url}>
+                                                <span> {item.title}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
+
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -99,6 +120,6 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
-        </Sidebar>
+        </Sidebar >
     )
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Node, Edge, NodeChange, EdgeChange, Connection, Background, MiniMap, Controls, Panel } from '@xyflow/react';
 import { useSuspenseWorkflow } from "@/features/workflows/hooks/use-workflows";
 import '@xyflow/react/dist/style.css';
@@ -7,6 +7,8 @@ import { nodeComponents } from '@/components/node-components';
 import { AddNodeButton } from './add-node-button';
 import { editorAtoms } from '../store/atoms';
 import { useSetAtom } from 'jotai';
+import { ExecuteWorkflowButton } from './execute-workflow-button';
+import { NodeType } from '@/generated/prisma/enums';
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
@@ -25,7 +27,9 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         (params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
         [],
     );
-
+    const hasManualTrigger = useMemo(() => {
+        return nodes.some((node) => node.type === NodeType.MANUAL_TRIGGER);
+    }, [nodes])
     return (
         <div className='w-full h-165'>
             <ReactFlow
@@ -39,7 +43,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
                 proOptions={{
                     hideAttribution: true
                 }}
-                snapGrid={[10,10]}
+                snapGrid={[10, 10]}
                 snapToGrid
                 selectionOnDrag
                 panOnScroll
@@ -50,8 +54,13 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
                 <MiniMap />
                 <Controls />
                 <Panel position="top-right">
-                    <AddNodeButton/>
+                    <AddNodeButton />
                 </Panel>
+                {hasManualTrigger && (
+                    <Panel position="bottom-center">
+                        <ExecuteWorkflowButton workflowId={workflowId} />
+                    </Panel>
+                )}
             </ReactFlow>
         </div>
     );

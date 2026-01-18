@@ -2,25 +2,45 @@ import { inngest } from "./client";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import * as Sentry from "@sentry/nextjs";
+import { NonRetriableError } from "inngest";
+import prisma from "@/lib/db";
+import { topologicalSort } from "@/features/executions/lib/utils";
+import { getExecutor } from "@/features/executions/lib/executor-registry";
+import { NodeType } from "@/generated/prisma/enums";
 
 
-export const aiExecute = inngest.createFunction(
-    { id: "ai-execute" },
-    { event: "ai/execute" },
+export const executeWorkflow = inngest.createFunction(
+    { id: "workflows-execute.workflow" },
+    { event: "workflows/execute.workflow" },
     async ({ event, step }) => {
+        const workflowId = event.data.workflowId;
+        if (!workflowId) {
+            throw new NonRetriableError("Workflow ID is missing!")
+        }
 
-        Sentry.logger.info('User triggered ai execute', { log_source: 'sentry_test' })
-
-        const { steps } = await step.ai.wrap("openapi-generate-text", generateText, {
-            model: openai("gpt-5"),
-            system: "You are helpfull assistent",
-            prompt: "what is 9 + 9?",
-            experimental_telemetry: {
-                recordInputs: true,
-                recordOutputs: true,
-                isEnabled: true
-            }
+        const sortedNodes = await step.run("prepare-workflows", async () => {
+            const workflow = await prisma.workflow.findUniqueOrThrow({
+                where: {
+                    id: workflowId
+                },
+                include: { nodes: true, connections: true }
+            })
+            return topologicalSort(workflow.nodes, workflow.connections)
         })
-        return steps;
+        // Initialize contect with any initial data from the trigger.
+        let context = event.data.initialData || {};
+        for (const node of sortedNodes) {
+            const executor = getExecutor(node.type as NodeType)
+            context = await executor({
+                data: node.data as Record<string, unknown>,
+                nodeId: node.id,
+                context,
+                step
+            })
+        }
+        return {
+            workflowId,
+            result: context
+        }
     }
 );
