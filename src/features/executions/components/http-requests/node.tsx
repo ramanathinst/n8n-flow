@@ -5,10 +5,10 @@ import { Node, useReactFlow, type NodeProps } from "@xyflow/react";
 import { HttpRequestDialog, type HttpRequestFormValues } from "./dialog";
 
 type HttpRequestNodeData = {
-    endpoint: string;
-    method: "GET" | "POST" | "PUT" | "DELETE";
-    body: string;
-    [key: string]: unknown;
+    variableName?: string;
+    endpoint?: string;
+    method?: "GET" | "POST" | "PUT" | "DELETE";
+    body?: string;
 }
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
 
@@ -26,9 +26,7 @@ export const HttpRequsetsNode = memo((props: NodeProps<HttpRequestNodeType>) => 
                         ...node,
                         data: {
                             ...node.data,
-                            method: values.method,
-                            endpoint: values.endpoint,
-                            body: values.body
+                            ...values
                         }
                     }
                 }

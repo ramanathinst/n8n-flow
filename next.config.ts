@@ -9,11 +9,10 @@ const nextConfig: NextConfig = {
       {
         source: "/",
         destination: "/workflows",
-        permanent: false
-        
-      }
-    ]
-  }
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {

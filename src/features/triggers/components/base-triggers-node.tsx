@@ -56,7 +56,7 @@ export const BaseTriggersNode = memo(({
                     onDoubleClick={onDoubleClick}
                     className="rounded-l-2xl"
                 >
-                    <BaseNodeContent className="p-7">
+                    <BaseNodeContent className="p-5">
                         {typeof Icon === "string" ? (
                             <Image src={Icon} alt="base-trigger-node" width={20} height={20} />
                         ) : (
