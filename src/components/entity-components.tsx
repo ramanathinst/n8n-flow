@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type EntityHeaderProps = {
     name: string;
@@ -271,6 +272,7 @@ interface EntityItemProps {
     isRemoving?: boolean;
     onRemove?: () => void | Promise<void>;
     actions?: React.ReactNode;
+    className?: string;
 }
 
 export const EntityItem = ({
@@ -280,7 +282,8 @@ export const EntityItem = ({
     subTitle,
     isRemoving,
     onRemove,
-    actions
+    actions,
+    className
 }: EntityItemProps) => {
     const handleSubmit = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -293,8 +296,9 @@ export const EntityItem = ({
         }
     }
     return (
-        <Link href={href} prefetch>
-            <Card className="w-6xl mt-2">
+        <Link href={href} prefetch
+        >
+            <Card className={cn("hover:bg-accent w-6xl mt-2", isRemoving && "hover:cursor-not-allowed bg-amber-100" , className)}>
                 <CardContent>
                     <div className="flex items-center justify-between">
                         <div className="flex gap-4">
@@ -311,7 +315,7 @@ export const EntityItem = ({
                                     {onRemove && (
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button onClick={(e) => e.stopPropagation()} variant="outline"> <MoreVerticalIcon /> </Button>
+                                                <Button onClick={(e: React.MouseEvent) => e.stopPropagation()} variant="outline"> <MoreVerticalIcon /> </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent onClick={(e) => e.stopPropagation()} className="w-56">
                                                 <Button disabled={isRemoving} onClick={handleSubmit}>
