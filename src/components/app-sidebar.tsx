@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
     Workflow,
     KeyRound,
@@ -9,6 +9,9 @@ import {
     CreditCard,
     LogOut,
     Sparkles,
+    StarIcon,
+    CreditCardIcon,
+    LogOutIcon,
 } from "lucide-react"
 
 import {
@@ -28,6 +31,9 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Button } from "./ui/button"
+import { authClient } from "@/lib/auth-client"
+import { useHasActiveSubscription } from "@/features/subscriptions/hooks/use-subscriptions"
 
 const items = [
     { title: "Workflows", href: "/workflows", icon: Workflow },
@@ -39,7 +45,8 @@ export function AppSidebar() {
     const pathname = usePathname()
     const { state } = useSidebar()
     const collapsed = state === "collapsed"
-
+    const router = useRouter();
+    const { hasActiveSubscription, isLoading} = useHasActiveSubscription();
     return (
         <TooltipProvider delayDuration={0}>
             <Sidebar collapsible="icon">
@@ -84,56 +91,44 @@ export function AppSidebar() {
                 </SidebarContent>
 
                 {/* Footer */}
+                {/* ✅ FOOTER ACTION BUTTONS */}
                 <SidebarFooter>
-                    <FooterButton
-                        icon={Sparkles}
-                        label="Upgrade to Pro"
-                        collapsed={collapsed}
-                    />
-                    <FooterButton
-                        icon={CreditCard}
-                        label="Billing Portal"
-                        collapsed={collapsed}
-                    />
-                    <FooterButton
-                        icon={LogOut}
-                        label="Logout"
-                        collapsed={collapsed}
-                        destructive
-                    />
+                    {!hasActiveSubscription && !isLoading && (
+                        <SidebarMenuButton
+                        tooltip={"Upgarde to Pro"}
+                        onClick={() => authClient.checkout({ slug: "n8n"})}
+                        className="cursor-pointer"
+                    >
+                        <StarIcon />
+                        Upgarde to Pro
+                    </SidebarMenuButton>
+                    )}
+
+                    <SidebarMenuButton
+                    tooltip={"Billing Portal"}
+                        onClick={() => authClient.customer.portal()}
+                        className="cursor-pointer"
+                    >
+                        <CreditCardIcon />
+                        Billing Portal
+                    </SidebarMenuButton>
+                    <SidebarMenuButton
+                        disabled={false}
+                        tooltip={"Logout"}
+                        onClick={() => authClient.signOut({
+                            fetchOptions: {
+                                onSuccess: () => {
+                                    router.push("/login")
+                                }
+                            }
+                        })}
+                        className="cursor-pointer"
+                    >
+                        <LogOutIcon />
+                        Logout
+                    </SidebarMenuButton>
                 </SidebarFooter>
             </Sidebar>
         </TooltipProvider>
-    )
-}
-
-function FooterButton({
-    icon: Icon,
-    label,
-    collapsed,
-    destructive,
-}: {
-    icon: any
-    label: string
-    collapsed: boolean
-    destructive?: boolean
-}) {
-    return (
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <SidebarMenuButton
-                    className={destructive ? "text-destructive" : ""}
-                >
-                    <Icon />
-                    <span>{label}</span>
-                </SidebarMenuButton>
-            </TooltipTrigger>
-
-            {collapsed && (
-                <TooltipContent side="right">
-                    {label}
-                </TooltipContent>
-            )}
-        </Tooltip>
     )
 }
