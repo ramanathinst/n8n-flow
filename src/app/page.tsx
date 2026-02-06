@@ -1,6 +1,7 @@
 import { Card, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/db";
 import { caller } from "@/trpc/server";
+import { LogoutButton } from "./logout-button";
 
 const Page = async() => {
   const users = await caller.getUsers()
@@ -10,6 +11,7 @@ const Page = async() => {
         <CardTitle>
           This is n8n-flow
           {JSON.stringify(users)}
+          <LogoutButton />
         </CardTitle>
       </Card>
     </div>
