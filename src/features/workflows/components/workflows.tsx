@@ -11,7 +11,6 @@ import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntityDebouncedSearchInput } from "@/hooks/use-entity-search";
 
 export const WorkflowsList = () => {
-
     const { data: workflows } = useSuspenseWorkflows();
     return (
         <EntityList
