@@ -1,11 +1,13 @@
 import { useTRPC } from "@/trpc/client"
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useWorkflowsParams } from "./use-workflows-params";
 
 export const useSuspenseWorkflows = () => {
     const trpc = useTRPC();
-    return useSuspenseQuery(trpc.workflows.getMany.queryOptions());
+    const [ params ] = useWorkflowsParams();
+    return useSuspenseQuery(trpc.workflows.getMany.queryOptions(params));
 }
 
 export const useCreateWorflow = () => {
@@ -15,6 +17,21 @@ export const useCreateWorflow = () => {
         onSuccess: (data) => {
             toast.success("Workflow Created successful")
             router.push(`/workflows/${data.id}`)
+        },
+        onError: (error) =>  {
+            toast.error(error.message)
+        }
+    }))
+}
+
+export const useRemoveWorkflow = (id: string) => {
+    const queryClient = useQueryClient();
+    const trpc = useTRPC();
+    return useMutation(trpc.workflows.remove.mutationOptions({
+        onSuccess: () => {
+            toast.success("Workflow Deleted successful")
+            queryClient.invalidateQueries(trpc.workflows.getMany.queryFilter({}))
+            queryClient.invalidateQueries(trpc.workflows.getOne.queryFilter({id}))
         },
         onError: (error) =>  {
             toast.error(error.message)
