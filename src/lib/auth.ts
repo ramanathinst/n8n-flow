@@ -35,7 +35,17 @@ export const auth = betterAuth({
                 }),
                 portal(),
                 usage(),
-            ], 
-        }) 
-    ]
+            ],
+        })
+    ],
+    user: {
+        deleteUser: {
+            enabled: true,
+            afterDelete: async (user, request) => {
+                await polarClient.customers.deleteExternal({
+                    externalId: user.id
+                })
+            },
+        }
+    },
 });

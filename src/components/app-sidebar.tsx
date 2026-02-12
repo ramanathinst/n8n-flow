@@ -52,7 +52,8 @@ export function AppSidebar() {
             <Sidebar collapsible="icon">
                 {/* Header */}
                 <SidebarHeader className="font-bold mb-7 self-center">
-                    {collapsed ? "N8N" : "N8N-FLOW"}
+                    <Link href={"/workflows"}>
+                    {collapsed ? "N8N" : "N8N-FLOW"}</Link>
                 </SidebarHeader>
 
                 {/* Content */}
