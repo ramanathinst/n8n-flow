@@ -121,7 +121,7 @@ export function EntityContainer({
             <div className="gap-2">
                 {header}
             </div>
-            <div className="w-full sm:w-auto mt-2 mb-2 sm:ml-auto">
+            <div className="w-full sm:w-auto mt-2 mb-2 ml-auto">
                 {search}
             </div>
 
@@ -299,12 +299,9 @@ type LoadingViewProps = {
 
 export function LoadingView({
     message,
-    className,
 }: LoadingViewProps) {
     return (
-        <div
-            className=
-            "flex w-full flex-col items-center justify-center"        >
+        <div className="flex flex-col items-center justify-center min-h-screen">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             {message}
         </div>
@@ -322,19 +319,11 @@ type ErrorViewProps = {
 
 export function ErrorView({
     message = "Something went wrong.",
-    className,
 }: ErrorViewProps) {
     return (
-        <div
-            className={cn(
-                "flex min-h-50 w-full flex-col items-center justify-center gap-3 rounded-lg border border-destructive/30 bg-card p-6 text-center",
-                className
-            )}
-        >
+        <div className="flex flex-col items-center justify-center min-h-screen">
             <AlertTriangleIcon className="h-6 w-6 text-destructive" />
-            <p className="text-sm text-muted-foreground">
-                {message}
-            </p>
+            {message}
         </div>
     )
 }

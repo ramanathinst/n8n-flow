@@ -1,4 +1,4 @@
-import { LoadingView } from "@/components/entity-components";
+import { ErrorView, LoadingView } from "@/components/entity-components";
 import { WorkflowsContainer, WorkflowsList } from "@/features/workflows/components/workflows";
 import { workflowsParamsLoader } from "@/features/workflows/server/params-loader";
 import { prefetchWorkflowsParams } from "@/features/workflows/server/prefetch";
@@ -18,7 +18,7 @@ const Page = async ({ searchParams }: PageProps) => {
     return (
         <WorkflowsContainer>
             <HydrateClient>
-                <ErrorBoundary fallback={<div>Something went wrong</div>}>
+                <ErrorBoundary fallback={<ErrorView />}>
                     <Suspense fallback={<LoadingView />}>
                         <WorkflowsList />
                     </Suspense>
